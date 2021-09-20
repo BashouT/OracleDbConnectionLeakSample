@@ -1,14 +1,8 @@
-﻿using Dapper;
-using Oracle.ManagedDataAccess.Client;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Security;
+﻿using Microsoft.Extensions.DependencyInjection;
 using OracleDbConnectionLeak.Db;
-using System.Threading;
-using Microsoft.Extensions.DependencyInjection;
 using OracleDbConnectionLeak.Repos;
+using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace OracleDbConnectionLeak
@@ -22,17 +16,21 @@ namespace OracleDbConnectionLeak
             .AddScoped<IDirectDbConnectionFactory, DirectDbConnectionFactory>()
             .BuildServiceProvider();
 
-            //do the actual work here
-            var sut = serviceProvider.GetService<IRepository>();
 
 
-            _ = await sut.PerformQuery();
-            _ = await sut.PerformQuery();
-            _ = await sut.PerformQuery();
-            _ = await sut.PerformQuery();
+            await RunTestMethodAsync(serviceProvider);
+            await RunTestMethodAsync(serviceProvider);
+            await RunTestMethodAsync(serviceProvider);
+            await RunTestMethodAsync(serviceProvider);
 
             Thread.Sleep(500);
             Console.ReadLine();
+        }
+
+        private static async Task RunTestMethodAsync(ServiceProvider sp)
+        {
+            var sut = sp.GetService<IRepository>();
+            _ = await sut.PerformQuery();
         }
     }
 }
